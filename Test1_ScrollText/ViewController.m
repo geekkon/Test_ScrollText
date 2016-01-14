@@ -41,12 +41,13 @@
     textView.font = [UIFont systemFontOfSize:22.0];
     textView.editable = NO;
     textView.selectable = NO;
+    textView.userInteractionEnabled = NO;
     
     textView.frame = CGRectMake(0.0, 0.0, textView.contentSize.width, textView.contentSize.height);
         
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
     
-    [textView addGestureRecognizer:panGesture];
+//    [textView addGestureRecognizer:panGesture];
     
     [self.view addSubview:textView];
     
@@ -96,6 +97,38 @@
     self.textView.frame = presentationLayer.frame;
     
     [self.textView.layer removeAllAnimations];
+}
+
+
+#pragma mark - Touches
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    
+    [self stopAnimation];
+}
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    
+    UITouch *touch = [touches anyObject];
+    
+    CGPoint currentPoint = [touch locationInView:self.view];
+    CGPoint previousPoint = [touch previousLocationInView:self.view];
+    
+    CGFloat translation = currentPoint.y - previousPoint.y;
+    
+    CGRect currentFrame = self.textView.frame;
+    
+    self.textView.frame = CGRectMake(CGRectGetMinX(currentFrame), CGRectGetMinY(currentFrame) + translation, CGRectGetWidth(currentFrame), CGRectGetHeight(currentFrame));
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+
+    [self startAnimation];
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    
+    [self startAnimation];
 }
 
 
